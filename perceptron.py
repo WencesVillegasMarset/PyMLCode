@@ -9,6 +9,8 @@ class Perceptron():
         Learning rate
     n_iters : int
         Number of epochs to run
+    r_seed : float
+        Random seed to initialize weights
     Attributes
     w_vector : 1d-array
         Vector of weights after training
@@ -16,10 +18,10 @@ class Perceptron():
         Number of errors in classification per epoch
 
     '''
-    def __init__(self, l_rate, n_iters):
+    def __init__(self, l_rate, n_iters, r_seed=1):
         self.l_rate = l_rate
         self.n_iters = n_iters
-    
+        self.r_seed = r_seed
     def train(self, X, y):
         '''
         X is a matrix of M x N where
@@ -30,14 +32,16 @@ class Perceptron():
         Returns Perceptron with trained weights and error per epoch info
         '''
         #initialize weights plus  bias
-        self.w_vector = np.zeros(1 +  np.shape(X)[1])
+        randomGen = np.random.RandomState(seed=self.r_seed)
+
+        self.w_vector = randomGen.normal(loc=0.0, scale=0.01, size=1 +  np.shape(X)[1])
         #initialize error list
         self.error_list = []
-        #optimization loop: epochs -> training set
+        #optimization loop: epochs over training set
         for _ in range(self.n_iters):
             errors = 0
-            for sample, target in zip(X,y): #Loop over training set, selecting a row and respective target class for each case
-                update = self.l_rate * (target - self.predict(X))
+            for sample, target in zip(X, y): #Loop over training set, selecting a row and respective target class for each case
+                update = self.l_rate * (target - self.predict(sample))
                 self.w_vector[0] += update
                 self.w_vector[1:] += (update * sample)
                 #if an update is != 0 then register error
@@ -45,7 +49,7 @@ class Perceptron():
                     errors += 1
 
             self.error_list.append(errors)
-
+        return self
         
     def net_input(self, X):
         '''
@@ -54,7 +58,4 @@ class Perceptron():
         return np.dot(X, self.w_vector[1:]) + self.w_vector[0] 
     def predict(self, X):
         '''Return class label prediction from input given'''
-        if self.w_vector == None:
-            print('Please run the train method first to be able to predict')
-        else:
-            return np.where(self.net_input(X) >= 0.0, 1, -1)
+        return np.where(self.net_input(X) >= 0.0, 1, -1)
