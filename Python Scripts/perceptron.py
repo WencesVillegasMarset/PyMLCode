@@ -86,7 +86,7 @@ plt.legend()
 plt.show()
 
 #Data is ready, now create perceptron classifier 
-perc = perceptron.Perceptron(l_rate=0.1, n_iters=10)
+perc = Perceptron(l_rate=0.1, n_iters=10)
 perc.train(X, y)
 print(str(perc.predict([4,4])) + " Predicted for 1 and 4")
 print(perc.error_list)
@@ -129,6 +129,6 @@ plot_decision_regions(X, y, classifier=perc)
 plt.xlabel('sepal length cm')
 plt.ylabel('petal length cm')
 plt.legend(loc='upper left')
-        plt.tight_layout()
+plt.tight_layout()
 
 plt.show()
